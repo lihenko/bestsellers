@@ -1,0 +1,30 @@
+{% if cart.item_count > 0 %}
+  <section class="cart-footer">
+    <div class="container">
+
+      <form action="{{ routes.cart_url }}" method="post" id="cart-form">
+        <div class="cart-subtotal">
+          <span>Subtotal</span>
+          <span>{{ cart.total_price | money }}</span>
+        </div>
+
+        <button type="submit" name="update" class="cart-update-button">Update cart</button>
+
+        <button type="submit" name="checkout" class="cart-checkout-button">Checkout</button>
+      </form>
+
+    </div>
+  </section>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Cart footer",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Cart footer"
+    }
+  ]
+}
+{% endschema %}

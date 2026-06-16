@@ -1,0 +1,24 @@
+<section class="main-section">
+    <div class="container">
+        <h1>{{ section.settings.section_title | default: "Shop" }}</h1>
+    </div>
+</section>
+
+{% schema %}
+{
+  "name": "Main Section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Section title",
+      "default": "Section title"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Main Section"
+    }
+  ]
+}
+{% endschema %}

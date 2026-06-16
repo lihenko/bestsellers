@@ -1,0 +1,24 @@
+<html>
+    <head>
+        {{ content_for_header }}
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        {{ "style.css" | asset_url | stylesheet_tag }}
+        {{ 'best-sellers.css' | asset_url | stylesheet_tag }}
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+        {% if settings.favicon %}
+            <link rel="icon" type="image/png" href="{{ settings.favicon | image_url: width: 32, height: 32 }}">
+        {% endif %}
+    </head>
+    <body>
+        <div class="overlay"></div>
+        {% render 'header' %}
+        {{ content_for_layout }}
+    </body>
+    <footer>
+        {% render 'footer' %}
+    </footer>
+    <script src="{{ 'scripts.js' | asset_url }}" defer></script>
+</html>

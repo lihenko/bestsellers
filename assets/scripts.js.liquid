@@ -1,0 +1,129 @@
+document.addEventListener('DOMContentLoaded', function () {
+  const sections = document.querySelectorAll('.best-sellers-wrap');
+
+  sections.forEach(function (section) {
+    const tabs = section.querySelectorAll('.best-sellers-collections-list li');
+
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        const index = this.dataset.collectionIndex;
+        const current = section.querySelector('.best-sellers-product.active');
+        const next = section.querySelector('.best-sellers-product[data-collection-index="' + index + '"]');
+
+        if (current === next) return;
+
+        tabs.forEach(function (t) { t.classList.remove('active'); });
+        this.classList.add('active');
+
+        if (current) {
+          current.classList.remove('show', 'active');
+        }
+
+        next.classList.add('active');
+
+        requestAnimationFrame(function () {
+          requestAnimationFrame(function () {
+            next.classList.add('show');
+          });
+        });
+      });
+    });
+
+    const activeProduct = section.querySelector('.best-sellers-product.active');
+    if (activeProduct) activeProduct.classList.add('show');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const overlay = document.querySelector('.overlay');
+  const popup = document.querySelector('.best-sellers-favorite-popup');
+  const popupTitle = document.querySelector('.best-sellers-popup-product-name');
+  const closeBtn = document.querySelector('.best-sellers-popup-product-close');
+  const wishlistButtons = document.querySelectorAll('.best-sellers-wishlist-button');
+
+  if (!popup || !popupTitle || !closeBtn || !wishlistButtons.length) return;
+
+  function getWishlist() {
+    return JSON.parse(localStorage.getItem('wishlist') || '[]');
+  }
+
+  wishlistButtons.forEach(function (button) {
+    const productId = button.dataset.productId;
+    let wishlist = getWishlist();
+
+    if (wishlist.includes(productId)) button.classList.add('active');
+
+    button.addEventListener('click', function () {
+      wishlist = getWishlist();
+
+      if (wishlist.includes(productId)) {
+        wishlist = wishlist.filter(function (id) { return id !== productId; });
+        this.classList.remove('active');
+      } else {
+        wishlist.push(productId);
+        this.classList.add('active');
+
+        popupTitle.textContent = this.dataset.productTitle;
+        overlay.classList.add('active');
+        popup.classList.add('active');
+        document.body.classList.add('popup');
+      }
+
+      localStorage.setItem('wishlist', JSON.stringify(wishlist));
+    });
+  });
+
+  closeBtn.addEventListener('click', function () {
+    overlay.classList.remove('active');
+    popup.classList.remove('active');
+    document.body.classList.remove('popup');
+  });
+
+  overlay.addEventListener('click', function () {
+    overlay.classList.remove('active');
+    popup.classList.remove('active');
+    document.body.classList.remove('popup');
+  });
+});
+
+document.addEventListener('DOMContentLoaded', function () {
+  const overlay = document.querySelector('.overlay');
+  const addToCartButtons = document.querySelectorAll('.best-sellers-addtocart-button');
+  const popup = document.querySelector('.best-sellers-addtocart-popup');
+
+  if (!popup || !addToCartButtons.length) return;
+
+  const popupName = popup.querySelector('.best-sellers-popup-addtocart-name');
+  const closeBtn = popup.querySelector('.best-sellers-popup-addtocart-close');
+  const closeLink = popup.querySelector('.outline-button');
+
+  function close() {
+    overlay.classList.remove('active');
+    popup.classList.remove('active');
+    document.body.classList.remove('popup');
+  }
+
+  closeBtn.addEventListener('click', function (e) { e.preventDefault(); close(); });
+  closeLink.addEventListener('click', function (e) { e.preventDefault(); close(); });
+  overlay.addEventListener('click', close);
+
+  addToCartButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      if (this.disabled) return;
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ items: [{ id: this.dataset.variantId, quantity: 1 }] })
+      })
+        .then(function (response) { return response.json(); })
+        .then(function () {
+          popupName.textContent = button.dataset.productTitle;
+          overlay.classList.add('active');
+          popup.classList.add('active');
+          document.body.classList.add('popup');
+        })
+        .catch(function (error) { console.error(error); });
+    });
+  });
+});

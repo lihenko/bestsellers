@@ -1,0 +1,66 @@
+<section class="product">
+  <div class="container">
+    <div class="product-wrap">
+
+      <div class="product-media">
+        {% if product.featured_media %}
+          <img src="{{ product.featured_media | image_url: width: 800 }}"
+               alt="{{ product.featured_media.alt | escape }}"
+               width="800"
+               height="{{ 800 | divided_by: product.featured_media.aspect_ratio }}"
+               loading="lazy">
+        {% else %}
+          {{ 'product-1' | placeholder_svg_tag: 'product-placeholder-img' }}
+        {% endif %}
+      </div>
+
+      <div class="product-info">
+        <h1 class="product-title">{{ product.title }}</h1>
+
+        <div class="product-price">
+          {% if product.compare_at_price > product.price %}
+            <span class="product-current-price">{{ product.price | money }}</span>
+            <span class="product-original-price">{{ product.compare_at_price | money }}</span>
+          {% else %}
+            <span class="product-current-price">{{ product.price | money }}</span>
+          {% endif %}
+        </div>
+
+        <div class="product-description">
+          {{ product.description }}
+        </div>
+
+        {% form 'product', product %}
+          <select name="id">
+            {% for variant in product.variants %}
+              <option value="{{ variant.id }}" {% if variant == product.selected_or_first_available_variant %}selected{% endif %}>
+                {{ variant.title }} - {{ variant.price | money }}
+              </option>
+            {% endfor %}
+          </select>
+
+          <button type="submit" name="add" {% unless product.available %}disabled{% endunless %}>
+            {% if product.available %}
+              Add to cart
+            {% else %}
+              Sold out
+            {% endif %}
+          </button>
+        {% endform %}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Main product",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Main product"
+    }
+  ]
+}
+{% endschema %}

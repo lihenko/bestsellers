@@ -1,0 +1,71 @@
+<section class="cart">
+  <div class="container">
+    <h1 class="cart-title">Your cart</h1>
+
+    {% if cart.item_count > 0 %}
+      <div class="cart-items">
+        {% for item in cart.items %}
+          <div class="cart-item">
+
+            <div class="cart-item-media">
+              {% if item.image %}
+                <img src="{{ item.image | image_url: width: 200 }}"
+                     alt="{{ item.image.alt | escape }}"
+                     width="200"
+                     height="{{ 200 | divided_by: item.image.aspect_ratio }}"
+                     loading="lazy">
+              {% else %}
+                {{ 'product-1' | placeholder_svg_tag: 'cart-item-placeholder-img' }}
+              {% endif %}
+            </div>
+
+            <div class="cart-item-info">
+              <a href="{{ item.url }}">
+                <h3>{{ item.product.title }}</h3>
+              </a>
+              <p class="cart-item-variant">{{ item.variant.title }}</p>
+
+              <div class="cart-item-price">
+                {% if item.original_price != item.final_price %}
+                  <span class="cart-item-current-price">{{ item.final_price | money }}</span>
+                  <span class="cart-item-original-price">{{ item.original_price | money }}</span>
+                {% else %}
+                  <span class="cart-item-current-price">{{ item.final_price | money }}</span>
+                {% endif %}
+              </div>
+            </div>
+
+            <div class="cart-item-quantity">
+              <input type="number"
+                     name="updates[]"
+                     value="{{ item.quantity }}"
+                     min="0"
+                     data-line="{{ forloop.index }}"
+                     form="cart-form">
+            </div>
+
+            <div class="cart-item-total">
+              {{ item.final_line_price | money }}
+            </div>
+
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="cart-empty">Your cart is empty</p>
+    {% endif %}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Cart items",
+  "settings": [],
+  "presets": [
+    {
+      "name": "Cart items"
+    }
+  ]
+}
+{% endschema %}
